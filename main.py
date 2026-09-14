@@ -60,24 +60,24 @@ def main():
 
     while True:
         print("\n" + "="*40)
-        print(" SIMULADOR DE EVACUACIÓN - TAREA 1")
+        print(" SIMULADOR DE EVACUACION - TAREA 1")
         print("="*40)
-        print(" Búsqueda No Informada:")
-        print("   1. Ejecutar BFS (Búsqueda en Anchura) o otro")
-        print("   2. Ejecutar DFS (Búsqueda en Profundidad) o otro")
-        print("\n Búsqueda Informada:")
+        print(" Busqueda No Informada:")
+        print("   1. Ejecutar BFS (Busqueda en Anchura) o otro")
+        print("   2. Ejecutar DFS (Busqueda en Profundidad) o otro")
+        print("\n Busqueda Informada:")
         print("   3. Ejecutar A* (A-Estrella) o otro")
         print("   4. Ejecutar Greedy Best-First Search o otro")
         print("\n Optimización Bioinspirada:")
-        print("   5. Ejecutar Algoritmo Genético (Bacterias)")
-        print("\n Herramientas de Visualización:")
+        print("   5. Ejecutar Algoritmo Genetico (Bacterias)")
+        print("\n Herramientas de Visualizacion:")
         print("   6. Mostrar estado actual del mapa")
-        print("   7. Simular propagación del fuego (1 turno)")
+        print("   7. Simular propagacion del fuego (1 turno)")
         print("   8. Reiniciar mapa al estado original")
         print("\n   0. Salir")
         print("="*40)
         
-        opcion = input("Seleccione un modo de ejecución: ")
+        opcion = input("Seleccione un modo de ejecucion: ")
 
         # poner los case en simulacion.py y llamar el metodo aqui
         match opcion:
