@@ -3,6 +3,14 @@ import os
 import time
 from simulacion import ejecutar_simulacion_genetica
 from entorno.grilla import Mapa
+from entorno.simulador import ejecutar_episodio
+
+ALGORITMOS_BUSQUEDA = {
+    '1': ('BFS', 'bfs'),
+    '2': ('DFS', 'dfs'),
+    '3': ('A*', 'astar'),
+    '4': ('Greedy Best-First Search', 'greedy'),
+}
 
 def limpiar_pantalla():
     #limpiar la consola
@@ -50,6 +58,23 @@ def visualizar_ruta(mapa, inicio, objetivo, adn):
     # Limpiamos el mapa restaurando los estados originales
     for f, c, estado_original in historial_cambios:
         mapa.matriz[f][c].estado = estado_original
+
+# funcion para ejecutar un episodio de busqueda y mostrar resultados en terminal
+def ejecutar_busqueda_interactiva(mapa, opcion):
+    nombre, algoritmo = ALGORITMOS_BUSQUEDA[opcion]
+    print(f"\n[*] Ejecutando {nombre}...")
+    resultado = ejecutar_episodio(mapa, algoritmo)
+    print("\n[+] Episodio finalizado.")
+    print(f"    Escapados: {resultado['escapados']}/{resultado['agentes_iniciales']}")
+    print(f"    Bajas: {resultado['muertos']}")
+    print(f"    Agentes vivos sin evacuar: {resultado['vivos']}")
+    print(f"    Tasa de supervivencia: {resultado['tasa_supervivencia']:.2%}")
+    print(f"    Tiempo de despeje: {resultado['tiempo_despeje']} turnos")
+    print("\n[*] Estado del mapa al finalizar:")
+    mapa.mostrar_mapa()
+    return resultado
+
+
 def main():
     # Instanciamos el entorno de pruebas una sola vez al inicio
     mapa_actual = Mapa(filas=10, columnas=10)
@@ -79,26 +104,17 @@ def main():
         
         opcion = input("Seleccione un modo de ejecucion: ")
 
-        # poner los case en simulacion.py y llamar el metodo aqui
         match opcion:
             case '1':
-                print("\n[!] Ejecutando BFS... (Pendiente de implementar)")
-                # logica_bfs(mapa_actual, inicio)
-            
+                ejecutar_busqueda_interactiva(mapa_actual, opcion)
             case '2':
-                print("\n[!] Ejecutando DFS... (Pendiente de implementar)")
-                # logica_dfs(mapa_actual, inicio)
-            
+                ejecutar_busqueda_interactiva(mapa_actual, opcion)
             case '3':
-                print("\n[!] Ejecutando A*... (Pendiente de implementar)")
-                # logica_astar(mapa_actual, inicio, objetivo)
-            
+                ejecutar_busqueda_interactiva(mapa_actual, opcion)
             case '4':
-                print("\n[!] Ejecutando Greedy... (Pendiente de implementar)")
-                # logica_greedy(mapa_actual, inicio, objetivo)
-            
+                ejecutar_busqueda_interactiva(mapa_actual, opcion)
             case '5':
-               ejecutar_simulacion_genetica(mapa_actual)
+                ejecutar_simulacion_genetica(mapa_actual)
             case '6':
                 print("\n[*] Mapa actual:")
                 mapa_actual.mostrar_mapa()
@@ -114,7 +130,7 @@ def main():
                 print("Mapa reiniciado a su estado original.")
             
             case '0':
-                print("\nSaliendo del simulador... ¡Éxito en la tarea!")
+                print("\nSaliendo del simulador...")
                 break
                 
             case _:

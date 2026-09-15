@@ -55,15 +55,25 @@ def _proponer_destinos(mapa, agentes, objetivo, buscar): # crea un diccionario p
     return propuestas
 
 
-def _ruta_genetica(mapa, inicio, objetivo): # usa el algoritmo genetico para encontrar una ruta desde inicio hasta objetivo
+def _ruta_genetica(
+    mapa,
+    inicio,
+    objetivo,
+    poblacion=40,
+    generaciones=20,
+    longitud_adn=20,
+): # usa el algoritmo genetico para encontrar una ruta desde inicio hasta objetivo
     genetico = AlgoritmoGenetico(
         mapa=mapa,
         inicio=inicio,
         objetivo=objetivo,
-        tam_poblacion=40,
-        longitud_adn=20,
+        tam_poblacion=poblacion,
+        longitud_adn=longitud_adn,
     )
-    mejor_individuo = genetico.evolucionar(generaciones=20, verbose=False) # evoluciona 20 generaciones para encontrar la mejor ruta
+    mejor_individuo = genetico.evolucionar(
+        generaciones=generaciones,
+        verbose=False,
+    ) # evoluciona generaciones para encontrar la mejor ruta
     movimientos = {
         0: (-1, 0),
         1: (1, 0),
@@ -131,7 +141,15 @@ def _resolver_movimientos(agentes, propuestas):
         agente.fila, agente.columna = destino
 
 
-def ejecutar_episodio(mapa, algoritmo, k_turnos_fuego=2, max_turnos=200):
+def ejecutar_episodio(
+    mapa,
+    algoritmo,
+    k_turnos_fuego=2,
+    max_turnos=200,
+    genetico_poblacion=40,
+    genetico_generaciones=20,
+    genetico_longitud_adn=20,
+):
     # ejecuta un episodio reproducible sin salida por consola ni pausas.
     agentes = _crear_agentes(mapa)
     objetivos = [
@@ -159,9 +177,15 @@ def ejecutar_episodio(mapa, algoritmo, k_turnos_fuego=2, max_turnos=200):
         if buscar is None:
             propuestas = {
                 agente.id: (
-                    _ruta_genetica(mapa, agente.posicion, objetivo)[:1] or [
-                        agente.posicion
-                    ]
+                    _ruta_genetica(
+                        mapa,
+                        agente.posicion,
+                        objetivo,
+                        poblacion=genetico_poblacion,
+                        generaciones=genetico_generaciones,
+                        longitud_adn=genetico_longitud_adn,
+                    )[:1]
+                    or [agente.posicion]
                 )[0]
                 for agente in agentes
                 if agente.estado == 'vivo'

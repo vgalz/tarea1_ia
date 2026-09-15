@@ -2,7 +2,7 @@ import random
 from entorno.celda import Celda
 
 class Mapa:
-    def __init__(self, filas=10, columnas=10, seed=None):
+    def __init__(self, filas=10, columnas=10, seed=None, plantilla=None):
         self.filas = filas
         self.columnas = columnas
         self.rng = random.Random(seed)
@@ -13,7 +13,45 @@ class Mapa:
                 fila_actual.append(Celda(estado='d'))
             self.matriz.append(fila_actual)
 
-        self._generar_entorno_basico()
+        if plantilla is None:
+            self._generar_entorno_basico()
+        else:
+            self._cargar_plantilla(plantilla)
+
+    @classmethod # acomoda para que se pueda crear un mapa desde una plantilla de texto
+    def desde_plantilla(cls, plantilla, seed=None):
+        return cls(
+            filas=len(plantilla),
+            columnas=len(plantilla[0]),
+            seed=seed,
+            plantilla=plantilla,
+        )
+
+    def _cargar_plantilla(self, plantilla): # valida la plantilla y carga los estados en la matriz
+        if any(len(fila) != self.columnas for fila in plantilla):
+            raise ValueError('Todas las filas de la plantilla deben medir lo mismo.')
+        estados_validos = {'m', 'd', 's', 'g'}
+        estados = [estado for fila in plantilla for estado in fila]
+        if any(estado not in estados_validos for estado in estados):
+            raise ValueError('La plantilla contiene estados desconocidos.')
+        if estados.count('g') != 1 or estados.count('s') == 0:
+            raise ValueError('La plantilla debe tener una salida y al menos un inicio.')
+        for fila, estados_fila in enumerate(plantilla):
+            for columna, estado in enumerate(estados_fila):
+                self.matriz[fila][columna].estado = estado
+        self._colocar_fuego_inicial()
+
+    def _colocar_fuego_inicial(self): # coloca el fuego inicial en una celda aleatoria que sea un pasillo, no sobre un muro, la salida o una posicion inicial
+        celdas_iniciales = [
+            (f, c)
+            for f in range(self.filas)
+            for c in range(self.columnas)
+            if self.matriz[f][c].estado == 'd'
+        ]
+        if not celdas_iniciales:
+            raise ValueError('El mapa debe tener al menos un pasillo para iniciar el fuego.')
+        f_fila, f_col = self.rng.choice(celdas_iniciales)
+        self.matriz[f_fila][f_col].estado = 'f'
 
     def _generar_entorno_basico(self):
         plantilla = [
@@ -36,14 +74,7 @@ class Mapa:
 
         # El fuego inicial debe comenzar en un pasillo, no sobre un muro,
         # la salida o una posicion inicial.
-        celdas_iniciales = [
-            (f, c)
-            for f in range(self.filas)
-            for c in range(self.columnas)
-            if self.matriz[f][c].estado == 'd'
-        ]
-        f_fila, f_col = self.rng.choice(celdas_iniciales)
-        self.matriz[f_fila][f_col].estado = 'f'
+        self._colocar_fuego_inicial()
 
     def propagar_fuego(self):
         direcciones = [(-1, 0), (1, 0), (0, -1), (0, 1)]
