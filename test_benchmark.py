@@ -36,4 +36,16 @@ def test_benchmark_pequeno():
     assert len(resultado) == 2
     assert {'escenario', 'algoritmo', 'tiempo_media'}.issubset(set(resultado[0]))
 
-
+def test_visualizacion_desde_resultados():
+    resultados = ejecutar_benchmark(
+        iteraciones=1,
+        max_turnos=20,
+        semilla=2,
+        escenarios=('abierto',),
+        algoritmos=('bfs', 'astar'),
+        mostrar_progreso=False,
+    )
+    figura = crear_figura(resultados)
+    assert len(figura.axes) == 2
+    figura.canvas.draw()
+    figura.clf()
